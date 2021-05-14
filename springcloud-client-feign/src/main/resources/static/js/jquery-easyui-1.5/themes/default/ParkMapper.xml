@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.lzy.dao.ParkDao">
+	<!-- 登录 -->
+	<select id="login" resultType="com.jk.lzy.entity.UserEntity">
+		select * from t_user u where u.username = #{username}
+	</select>
+	<!-- 动态树 -->
+	<select id="tree" resultType="com.jk.lzy.entity.TreeEntity">
+		select * from T_TREE t where pid = #{pid}
+	</select>
+	<!-- 查询 个数 -->
+	<select id="quaryCount" resultType="Integer">
+		select count(*) from t_parking_lot p1 
+        left join b_park p2
+             on p1.parkid = p2.park_typeid <include refid="tc"></include>
+	</select>
+	<!-- 分页查询 -->
+	<select id="getquary" resultType="com.jk.lzy.entity.ParkEntity">
+		select * from 
+		(select t1.*,rownum rn from 
+		(select * from t_parking_lot p1 
+		        left join b_park p2
+		             on p1.parkid = p2.park_typeid
+		             	<include refid="tc"></include>
+		             ) t1
+		                where  rownum &lt;= #{end}) t2
+		                      where t2.rn &gt;= #{start}
+	</select>
+	<!--  条查  -->
+	<sql id="tc">
+		<where>
+			<if test="park.parkid != null and park.parkid != ''">
+				and p1.parkid = #{park.parkid}
+			</if>
+			<if test="park.nickname != null and park.nickname != ''">
+				and p1.nickname = #{park.nickname} or p1.carnumber = #{park.nickname}
+			</if>
+			<if test="park.kaishi != null">
+				and p1.lotprice &gt;= #{park.kaishi}
+			</if>
+			<if test="park.jieshu != null">
+				and p1.lotprice &lt;= #{park.jieshu}
+			</if>
+		</where>
+	</sql>
+	<!-- 下拉列表框 -->
+	<select id="xiala" resultType="com.jk.lzy.entity.ParkEntity">
+		select * from b_park
+	</select>
+	<!-- 新增 小业务 先查询 -->
+	<select id="getcha" resultType="com.jk.lzy.entity.ParkEntity">
+		select * from t_parking_lot p where p.parkid = #{parkid} and p.lotname = #{lotname}
+	</select>
+	<!-- 新增  -->
+	<insert id="addinsert">
+		insert into t_parking_lot p (p.lotid,p.parkid,p.lotname,p.lotprice,p.lotstatus,p.imgs) 
+		values(w.nextval,#{parkid},#{lotname},#{lotprice},1,#{imgs})
+	</insert>
+	<!-- 修改 回显  -->
+	<select id="gethuixian" resultType="com.jk.lzy.entity.ParkEntity">
+		select * from t_parking_lot p where p.lotid = #{id}
+	</select>
+	<!-- 修改 -->
+	<select id="getxiu">
+		update t_parking_lot p set p.parkid = #{parkid} ,p.lotname = #{lotname},
+		p.lotprice = #{lotprice} where p.lotid = #{lotid}
+	</select>
+	<!-- 删除 -->
+	<delete id="deleteUser">
+		delete t_parking_lot p where p.lotid = #{integer}
+	</delete>
+</mapper>

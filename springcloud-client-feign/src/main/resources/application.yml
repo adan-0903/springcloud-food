@@ -1,0 +1,9 @@
+server:
+  port: 8088
+spring:
+  application:
+    name: client‐feign
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8085/eureka

@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+<form id="addForm">
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"><label>商品名称</label></div>
+            <div class="col-md-4">
+                <input class="form-control" id="name" name="goodname">
+            </div>
+        </div>
+    </div>
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"><label>商品价格</label></div>
+            <div class="col-md-4">
+                <input class="form-control" id="info" name="goodprice">
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"><label>商品类型</label></div>
+            <div class="col-md-4">
+                <select class="selectpicker form-control" data-live-search="true" name="goodtype" id="goodtype">
+                    <option value="-1">请选择</option>
+                    <option value="1">零食</option>
+                    <option value="2">饮料</option>
+                    <option value="3">生活用品</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"><label>上架时间</label></div>
+            <div class="col-md-4">
+                <input type="text" class="form-control date" name="goodtime" id=goodtime>
+            </div>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="row">
+            <div class="col-md-2"><label>上架时间</label></div>
+            <div class="col-md-4">
+                <input type="radio" name="status" value="1">上架
+                <input type="radio" name="status" value="2">下架
+            </div>
+        </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+</form>
+
+</body>
+<script>
+    $(function(){
+
+        //条查时间
+        dateTc();
+
+    })
+    //条查时间
+    function dateTc(){
+        $('.date').datetimepicker({
+            language: 'zh-CN',//显示中文
+            format: 'yyyy-mm-dd',//显示格式
+            minView: "month",//设置只显示到月份
+            initialDate: new Date(),//初始化当前日期
+            autoclose: true,//选中自动关闭
+            todayBtn: true,//显示今日按钮
+        })
+    }
+</script>
+</html>

@@ -1,0 +1,13 @@
+package com.jk.lzy;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class SpringcloudPoviderApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}

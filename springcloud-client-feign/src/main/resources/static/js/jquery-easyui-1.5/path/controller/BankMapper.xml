@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "mybatis-3-mapper.dtd" >
+<mapper namespace="com.jk.lzy.dao.BankDao">
+  	<select id="login" resultType="com.jk.lzy.entity.UserEntity">
+  		select * from T_USER t where user_name = #{user_name}
+  		
+  	</select>
+  	<select id="getquary" resultType="com.jk.lzy.entity.BankEntity">
+  		select * from
+       (select t1.*,rownum rn from  
+          (select * from b_bank b 
+         left join t_user u on b.b_user_id = u.user_name
+		              	<include refid="tc"></include>
+		              	
+		              	
+		              ) t1 where rownum &lt;= #{end}) t2
+		                             where t2.rn &gt;= #{start}
+  	</select>
+  	<select id="quaryCount" resultType="Integer">
+  		select count(*) from b_bank b left join t_user u
+		              on b.b_user_id = u.user_name
+		              <include refid="tc"></include>
+  	</select>
+  	<sql id="tc">
+  		<where>
+  			<if test="bank.b_user_id != null and bank.b_user_id != ''">
+  				and b.b_user_id like '%${bank.b_user_id}%'
+  			</if>
+  			<if test="bank.b_user_code != null and bank.b_user_code != ''">
+  				and b_user_code like '%${bank.b_user_code}%'
+  			</if>
+  			<if test="bank.kaishi != null and bank.kaishi != ''">
+  				and  create_date  &gt;= to_date(#{bank.kaishi},'yyyy-MM-dd') 
+  						or user_birthday &gt;= to_date(#{bank.kaishi},'yyyy-MM-dd')
+  			</if>
+  			<if test="bank.jieshu != null and bank.jieshu != ''">
+  				and  create_date  &lt;= to_date(#{bank.jieshu},'yyyy-MM-dd') 
+  						or user_birthday &lt;= to_date(#{bank.jieshu},'yyyy-MM-dd')
+  			</if>
+  		</where>
+  	</sql>
+  	<select id="getQueryOral" resultType="com.jk.lzy.entity.BankEntity">
+  		select * from B_BANK t  where t.b_user_id = #{userer}
+  	</select>
+</mapper>

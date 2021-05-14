@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<!--声明 Thymeleaf 的命名空间-->
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<!-- 引入bootstrap的css -->
+<link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css"></link>
+<link rel="stylesheet" href="../js/bootstrap/bootstrap3/css/bootstrap.css.map"></link>
+<!-- 引入jquery的js  -->
+<script type="text/javascript" src="../js/jquery.min.js"></script>
+<!-- 引入bootstrap的js -->
+<script type="text/javascript" src="../js/bootstrap/bootstrap3/js/bootstrap.js"></script>
+<!-- 引入boostrap的表格的css、js -->
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-table/bootstrap-table.css"></link>
+<script type="text/javascript" src="../js/bootstrap/bootstrap-table/bootstrap-table.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap-table/locale/bootstrap-table-zh-CN.js"></script>
+<!-- 引入bootbox弹框的js -->
+<script type="text/javascript" src="../js/bootstrap/bootstrap-bootbox/bootbox.js"></script>
+<!-- 引入bootbox时间 的css -->
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-datetimepicker/css/bootstrap-datetimepicker.css"></link>
+<!-- 引入bootbox时间 的js -->
+<script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/bootstrap-datetimepicker.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap-datetimepicker/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
+<!-- 引入bootbox上传图片 的css -->
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-fileinput/css/fileinput.css"></link>
+<!-- 引入bootbox上传图片 的js -->
+<script type="text/javascript" src="../js/bootstrap/bootstrap-fileinput/js/fileinput.js"></script>
+<script type="text/javascript" src="../js/bootstrap/bootstrap-fileinput/js/locales/zh.js"></script>
+<!-- 引入bootbox开关 按钮 的css -->
+<link rel="stylesheet" href="../js/bootstrap/bootstrap-switch-master/css/bootstrap3/bootstrap-switch.css"></link>
+<body>
+<form class="form-inline">
+    <div  class="form-group">
+        <label>图书类型+详情</label>
+        <input class="form-control" id="goodtypeinfo">
+        <label >时间区间：</label>
+        <input type="text" class="form-control date" name="goods.createTime"  id="sdate" >
+        ---
+        <input type="text" class="form-control date" name="goods.createTime" id="edate" >
+
+    </div>
+    <button onclick="search()" class="btn btn-primary glyphicon glyphicon-search" type="button">搜索</button>
+    <button onclick="add()" type="button" class="btn btn-danger">新增</button>
+</form>
+
+
+
+
+
+
+<table class="table" id="myTable"></table>
+</body>
+<script>
+
+    $(function(){
+        initGood();
+        dateTc();
+    })
+
+    function dateTc() {
+        $('.date').datetimepicker({
+            language: 'zh-CN',//显示中文
+            format: 'yyyy-mm-dd',//显示格式
+            minView: "month",//设置只显示到月份
+            initialDate: new Date(),//初始化当前日期
+            autoclose: true,//选中自动关闭
+            todayBtn: true,//显示今日按钮
+        })
+    }
+
+    function initGood(){
+        $('#myTable').bootstrapTable({
+            toolbar:'#toolbar',//工具栏
+            url:'/user/queryGood',//获取数据地址
+            pagination:true, //是否展示分页
+            pageList:[2, 4, 6, 10],//分页组件
+            pageNumber:1,//默认页码
+            pageSize:10,//默认每页条数
+            sidePagination:'server',//分页方式：client客户端分页，server服务端分页（*
+            striped:true,//斑马线
+            queryParams:function(){
+                return {
+                    page: this.pageNumber,
+                    rows: this.pageSize,
+                };
+            },
+            columns:[
+                {field:"checkbox",checkbox:true},
+                {field:"id",title:"ID"},
+                {field:"goodname",title:"商品名称"},
+                {field:"goodprice",title:"商品价格"},
+                {field:"goodtype",title:"商品类型"},
+                {field:"goodtime",title:"上架时间"},
+                {field:"status",title:"是否上架"},
+                {field:"tool",title:"操作",formatter:function(value,row,index){
+
+                        var str="";
+                        str+="<button onclick='del("+row.id+")' class='btn btn‐primary glyphicon glyphicon‐se arch' type='button'>删除</button>";
+                        str+="<button onclick='update("+row.id+")' class='btn btn‐primary glyphicon glyphicon‐se arch' type='button'>修改</button>";
+                        return str;
+                    }},
+            ]
+        })
+    }
+    search=function () {
+        $('#myTable').bootstrapTable("refresh");
+    }
+
+    //删除
+    del=function (id) {
+        $.ajax({
+            url:"/user/deleteGood",
+            data:{id:id},
+            success:function () {
+                $('#myTable').bootstrapTable("refresh");
+            }
+        })
+    }
+
+    var res;
+    function createAddContent(url){
+        $.ajax({
+            url:url,
+            async:false,//同步
+            success:function(data){
+                res = data;
+            }
+        });
+        return res;
+    }
+
+    //新增弹框
+    function add(){
+        bootbox.dialog({
+            title:'新增用户',
+            message: createAddContent("../path/addqwe"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"/good/add",
+                            type:'post',
+                            data:$("#addForm").serialize(),//表单序列化
+                            success:function(data){
+                                //刷新表格
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+    }
+
+    //修改
+    function update(ids){
+        bootbox.dialog({
+            title:'新增用户',
+            message: createAddContent("/page/add"),
+            closeButton: true,
+            buttons : {
+                "success" : {
+                    "label" : "<i class='icon-ok'></i> 保存",
+                    "className" : "btn-sm btn-success",
+                    "callback" : function() {//回调函数
+                        //提交表单
+                        $.ajax({
+                            url:"/good/add",
+                            type:'post',
+                            data:$("#addForm").serialize(),//表单序列化
+                            success:function(data){
+                                //刷新表格
+                                $('#myTable').bootstrapTable('refresh');
+                            }
+                        });
+                    }
+                },
+                "cancel" : {
+                    "label" : "<i class='icon-info'></i> 取消",
+                    "className" : "btn-sm btn-danger"
+                }
+            }
+
+        });
+//回显
+        $.ajax({
+            url:"/good/querygood",
+            type:'get',
+            data:{ids:ids},//表单序列化
+            success:function(data){
+              $("#id").val(data.id);
+              $("#name").val(data.goodname);
+              $("#info").val(data.goodinfo);
+              $("#goodtype").val(data.goodtype);
+              $("#goodtime").val(data.goodtime);
+            }
+        });
+
+    }
+</script>
+</html>
